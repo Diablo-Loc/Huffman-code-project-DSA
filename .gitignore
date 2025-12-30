@@ -1,0 +1,14 @@
+# Visual Studio
+.vs/
+*.ipch
+*.db
+*.suo
+
+# Build
+Debug/
+Release/
+x64/
+x86/
+
+# User files
+*.user
