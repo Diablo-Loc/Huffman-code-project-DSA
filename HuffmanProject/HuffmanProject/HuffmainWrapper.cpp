@@ -4,37 +4,51 @@
 #include "Decoder.h"
 #include "HuffmanTree.h"
 
-/*bool HuffmanWrapper::compressFile(
+#include <fstream>
+#include <vector>
+
+using namespace std;
+
+/* =================== COMPRESS =================== */
+bool HuffmanWrapper::compressFile(
     const string& inputPath,
     const string& outputPath)
 {
     vector<BYTE> data = FileHelper::readBinary(inputPath);
     if (data.empty()) return false;
 
+    // 1. Đếm tần suất
     Encoder enc;
     enc.countFrequency(data);
 
-    Node* root = TreeBuilder::build(enc.getFrequency());
+    // 2. Build cây Huffman
+    HuffmanTree tree;
+    Node* root = tree.buildTree(enc.getFrequency());
+
+    // 3. Build mã Huffman
     enc.buildCode(root);
 
+    // 4. Encode dữ liệu
     vector<BYTE> encoded = enc.encodeToBytes(data);
 
     ofstream out(outputPath, ios::binary);
     if (!out) return false;
 
-    // 1️ ghi bảng tần suất
+    // 5. Ghi bảng tần suất
     out.write((char*)enc.getFrequency(), 256 * sizeof(int));
 
-    // 2️ ghi kích thước gốc
-    int originalSize = data.size();
+    // 6. Ghi kích thước dữ liệu gốc
+    int originalSize = (int)data.size();
     out.write((char*)&originalSize, sizeof(int));
 
-    // 3️ ghi dữ liệu nén
+    // 7. Ghi dữ liệu đã nén
     out.write((char*)encoded.data(), encoded.size());
 
     out.close();
     return true;
 }
+
+/* =================== DECOMPRESS =================== */
 bool HuffmanWrapper::decompressFile(
     const string& inputPath,
     const string& outputPath)
@@ -42,18 +56,19 @@ bool HuffmanWrapper::decompressFile(
     ifstream in(inputPath, ios::binary);
     if (!in) return false;
 
-    // 1️ đọc bảng tần suất
+    // 1. Đọc bảng tần suất
     int freq[256];
     in.read((char*)freq, 256 * sizeof(int));
 
-    // 2️ đọc size gốc
+    // 2. Đọc kích thước dữ liệu gốc
     int originalSize;
     in.read((char*)&originalSize, sizeof(int));
 
-    // 3️ build lại cây Huffman
-    Node* root = TreeBuilder::build(freq);
+    // 3. Build lại cây Huffman
+    HuffmanTree tree;
+    Node* root = tree.buildTree(freq);
 
-    // 4️ đọc phần dữ liệu nén
+    // 4. Đọc dữ liệu nén
     vector<BYTE> encoded;
     BYTE b;
     while (in.read((char*)&b, 1)) {
@@ -61,13 +76,13 @@ bool HuffmanWrapper::decompressFile(
     }
     in.close();
 
-    // 5️ decode
+    // 5. Decode
     Decoder dec;
     vector<BYTE> decoded =
         dec.decodeFromBytes(encoded, root, originalSize);
 
-    // 6️ ghi file gốc
+    // 6. Ghi file giải nén
     FileHelper::writeBinary(outputPath, decoded);
+
     return true;
 }
-*/
