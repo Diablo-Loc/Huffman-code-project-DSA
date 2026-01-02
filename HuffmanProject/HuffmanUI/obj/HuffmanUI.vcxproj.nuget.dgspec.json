@@ -1,0 +1,90 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\Học tập\\7.Hoc_tren_lop\\DSA\\Final project\\Huffman-code-project-DSA\\HuffmanProject\\HuffmanUI\\HuffmanUI.vcxproj": {}
+  },
+  "projects": {
+    "D:\\Học tập\\7.Hoc_tren_lop\\DSA\\Final project\\Huffman-code-project-DSA\\HuffmanProject\\HuffmanProject\\HuffmanProject.vcxproj": {
+      "restore": {
+        "projectUniqueName": "D:\\Học tập\\7.Hoc_tren_lop\\DSA\\Final project\\Huffman-code-project-DSA\\HuffmanProject\\HuffmanProject\\HuffmanProject.vcxproj",
+        "projectName": "HuffmanProject",
+        "projectPath": "D:\\Học tập\\7.Hoc_tren_lop\\DSA\\Final project\\Huffman-code-project-DSA\\HuffmanProject\\HuffmanProject\\HuffmanProject.vcxproj",
+        "UsingMicrosoftNETSdk": false,
+        "frameworks": {
+          "native": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "native": {}
+      }
+    },
+    "D:\\Học tập\\7.Hoc_tren_lop\\DSA\\Final project\\Huffman-code-project-DSA\\HuffmanProject\\HuffmanUI\\HuffmanUI.vcxproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\Học tập\\7.Hoc_tren_lop\\DSA\\Final project\\Huffman-code-project-DSA\\HuffmanProject\\HuffmanUI\\HuffmanUI.vcxproj",
+        "projectName": "HuffmanUI",
+        "projectPath": "D:\\Học tập\\7.Hoc_tren_lop\\DSA\\Final project\\Huffman-code-project-DSA\\HuffmanProject\\HuffmanUI\\HuffmanUI.vcxproj",
+        "packagesPath": "C:\\Users\\locar\\.nuget\\packages\\",
+        "outputPath": "D:\\Học tập\\7.Hoc_tren_lop\\DSA\\Final project\\Huffman-code-project-DSA\\HuffmanProject\\HuffmanUI\\obj\\",
+        "projectStyle": "PackageReference",
+        "UsingMicrosoftNETSdk": false,
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\locar\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0-windows7.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "D:\\Học tập\\7.Hoc_tren_lop\\DSA\\Final project\\Huffman-code-project-DSA\\HuffmanProject\\HuffmanProject\\HuffmanProject.vcxproj": {
+                "projectPath": "D:\\Học tập\\7.Hoc_tren_lop\\DSA\\Final project\\Huffman-code-project-DSA\\HuffmanProject\\HuffmanProject\\HuffmanProject.vcxproj"
+              }
+            }
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0-windows7.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "secondaryFramework": "native",
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "c:\\program files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
