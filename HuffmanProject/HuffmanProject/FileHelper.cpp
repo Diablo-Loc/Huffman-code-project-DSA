@@ -1,7 +1,10 @@
 #include "FileHelper.h"
 #include <fstream>
 
-vector<unsigned char> FileHelper::readBinary(const string& path) {
+using namespace std;
+
+vector<unsigned char> FileHelper::readBinary(const wstring& path)
+{
     ifstream file(path, ios::binary);
     vector<unsigned char> data;
 
@@ -11,17 +14,13 @@ vector<unsigned char> FileHelper::readBinary(const string& path) {
     while (file.read((char*)&byte, 1)) {
         data.push_back(byte);
     }
-
-    file.close();
     return data;
 }
 
-void FileHelper::writeBinary(const string& path, const vector<unsigned char>& data) {
+void FileHelper::writeBinary(const wstring& path,
+    const vector<unsigned char>& data)
+{
     ofstream file(path, ios::binary);
-
-    for (unsigned char byte : data) {
-        file.write((char*)&byte, 1);
-    }
-
-    file.close();
+    for (unsigned char b : data)
+        file.write((char*)&b, 1);
 }
