@@ -129,6 +129,8 @@
     <ClCompile Include="HuffmainWrapper.cpp" />
     <ClCompile Include="HuffmanProject.cpp" />
     <ClCompile Include="HuffmanTree.cpp" />
+    <ClCompile Include="ImageHelper.cpp" />
+    <ClCompile Include="ImageHuffmanWrapper.cpp" />
     <ClCompile Include="Stack.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +139,8 @@
     <ClInclude Include="FileHelper.h" />
     <ClInclude Include="HuffmanTree.h" />
     <ClInclude Include="HuffmanWrapper.h" />
+    <ClInclude Include="ImageHelper.h" />
+    <ClInclude Include="ImageHuffmanWrapper.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Stack.h" />
   </ItemGroup>
