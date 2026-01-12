@@ -1,12 +1,17 @@
 ﻿#pragma once
+#ifndef HUFFMAN_WRAPPER_H
+#define HUFFMAN_WRAPPER_H
+
+#include "Metrics.h"
 #include <string>
-using namespace std;
 
 class HuffmanWrapper {
 public:
-    static bool compressFile(const string& inputPath,
-        const string& outputPath);
+    static bool compressFile(const std::string& inputPath,
+        const std::string& outputPath, CompressionMetrics& metrics);
 
-    static bool decompressFile(const string& inputPath,
-        const string& outputPath);
+    static bool decompressFile(const std::string& inputPath,
+        const std::string& outputPath);
 };
+
+#endif

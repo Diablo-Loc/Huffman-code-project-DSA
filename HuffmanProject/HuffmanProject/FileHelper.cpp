@@ -1,26 +1,23 @@
 #include "FileHelper.h"
 #include <fstream>
 
-using namespace std;
-
-vector<unsigned char> FileHelper::readBinary(const wstring& path)
-{
-    ifstream file(path, ios::binary);
-    vector<unsigned char> data;
+std::vector<BYTE> FileHelper::readBinary(const std::string& path) {
+    std::ifstream file(path, std::ios::binary);
+    std::vector<BYTE> data;
 
     if (!file) return data;
 
-    unsigned char byte;
-    while (file.read((char*)&byte, 1)) {
-        data.push_back(byte);
-    }
+    BYTE b;
+    while (file.read((char*)&b, 1))
+        data.push_back(b);
+
     return data;
 }
 
-void FileHelper::writeBinary(const wstring& path,
-    const vector<unsigned char>& data)
-{
-    ofstream file(path, ios::binary);
-    for (unsigned char b : data)
-        file.write((char*)&b, 1);
+void FileHelper::writeBinary(const std::string& path,
+    const std::vector<BYTE>& data) {
+    std::ofstream file(path, std::ios::binary);
+    if (!file) return;
+
+    file.write((char*)data.data(), data.size());
 }

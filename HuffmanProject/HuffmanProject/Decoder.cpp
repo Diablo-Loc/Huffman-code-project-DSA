@@ -1,28 +1,29 @@
 #include "Decoder.h"
 
-vector<unsigned char> Decoder::decodeFromBytes(
-    const vector<unsigned char>& bytes,
+vector<BYTE> Decoder::decodeFromBytes(
+    const vector<BYTE>& encoded,
     Node* root,
-    int originalSize
-) {
-    vector<unsigned char> result;
+    int originalSize)
+{
+    vector<BYTE> output;
+    output.reserve(originalSize);
+
     Node* cur = root;
 
-    for (unsigned char byte : bytes) {
+    for (BYTE byte : encoded) {
         for (int i = 7; i >= 0; i--) {
             int bit = (byte >> i) & 1;
 
-            if (bit == 0) cur = cur->left;
-            else          cur = cur->right;
+            cur = (bit == 0) ? cur->left : cur->right;
 
-            if (!cur->left && !cur->right) {
-                result.push_back(cur->data);
+            if (cur->isLeaf()) {
+                output.push_back(cur->ch);
                 cur = root;
 
-                if (result.size() == originalSize)
-                    return result;
+                if ((int)output.size() == originalSize)
+                    return output;
             }
         }
     }
-    return result;
+    return output;
 }

@@ -4,12 +4,12 @@
 
 #include <vector>
 #include "Node.h"
-using namespace std;
+using std::vector;
 
 class Decoder {
 public:
-    vector<unsigned char> decodeFromBytes(
-        const vector<unsigned char>& bytes,
+    vector<BYTE> decodeFromBytes(
+        const vector<BYTE>& encoded,
         Node* root,
         int originalSize
     );

@@ -70,6 +70,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(OutDir)HuffmanProject.lib</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -102,6 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,8 +131,8 @@
     <ClCompile Include="Encoder.cpp" />
     <ClCompile Include="FileHelper.cpp" />
     <ClCompile Include="HuffmainWrapper.cpp" />
-    <ClCompile Include="HuffmanProject.cpp" />
     <ClCompile Include="HuffmanTree.cpp" />
+    <ClCompile Include="MetricsCalculator.cpp" />
     <ClCompile Include="Stack.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +141,8 @@
     <ClInclude Include="FileHelper.h" />
     <ClInclude Include="HuffmanTree.h" />
     <ClInclude Include="HuffmanWrapper.h" />
+    <ClInclude Include="Metrics.h" />
+    <ClInclude Include="MetricsCalculator.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Stack.h" />
   </ItemGroup>

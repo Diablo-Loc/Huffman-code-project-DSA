@@ -12,17 +12,19 @@ using std::string;
 class Encoder {
 private:
     int freq[256];
-    string huffmanCode[256];
+    string code[256];
+
 public:
     Encoder();
 
+    void reset();
     void countFrequency(const vector<BYTE>& data);
-    int* getFrequency();
-
     void buildCode(Node* root);
-    vector<BYTE> encodeToBytes(const vector<BYTE>& data);
 
-    string getCode(BYTE b);
+    const int* getFrequency() const;
+    const string* getCodeTable() const;
+
+    vector<BYTE> encodeToBytes(const vector<BYTE>& data);
 };
 
 #endif

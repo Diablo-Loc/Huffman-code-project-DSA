@@ -14,6 +14,7 @@ public:
     StackNode* top;
 
     Stack();
+    ~Stack();
     void push(Node* node, string code);
     void pop(Node*& node, string& code);
     bool empty();

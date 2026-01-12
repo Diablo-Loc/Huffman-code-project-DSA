@@ -1,4 +1,5 @@
 #include "Stack.h"
+
 Stack::Stack() {
     top = nullptr;
 }
@@ -19,3 +20,4 @@ void Stack::pop(Node*& node, string& code) {
 bool Stack::empty() {
     return top == nullptr;
 }
+Stack::~Stack() {}

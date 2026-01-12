@@ -2,9 +2,11 @@
 #include <vector>
 #include <string>
 
+typedef unsigned char BYTE;
+
 class FileHelper {
 public:
-    static std::vector<unsigned char> readBinary(const std::wstring& path);
-    static void writeBinary(const std::wstring& path,
-        const std::vector<unsigned char>& data);
+    static std::vector<BYTE> readBinary(const std::string& path);
+    static void writeBinary(const std::string& path,
+        const std::vector<BYTE>& data);
 };
