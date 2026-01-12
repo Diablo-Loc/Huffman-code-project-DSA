@@ -83,8 +83,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Học tập\7.Hoc_tren_lop\DSA\Final project\Huffman-code-project-DSA\HuffmanProject\HuffmanProject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>Default</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)HuffmanProject\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <TerminalServerAware>

@@ -30,7 +30,7 @@
     <ClCompile Include="FileHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HuffmainWrapper.cpp">
+    <ClCompile Include="HuffmanWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MetricsCalculator.cpp">

@@ -130,7 +130,7 @@
     <ClCompile Include="Decoder.cpp" />
     <ClCompile Include="Encoder.cpp" />
     <ClCompile Include="FileHelper.cpp" />
-    <ClCompile Include="HuffmainWrapper.cpp" />
+    <ClCompile Include="HuffmanWrapper.cpp" />
     <ClCompile Include="HuffmanTree.cpp" />
     <ClCompile Include="MetricsCalculator.cpp" />
     <ClCompile Include="Stack.cpp" />
