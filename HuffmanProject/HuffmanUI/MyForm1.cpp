@@ -4,12 +4,12 @@ using namespace System;
 using namespace System::Windows::Forms;
 using namespace HuffmanUI;
 
-[STAThread]
-int main()
+[STAThreadAttribute]
+int main(array<System::String^>^ args)
 {
     Application::EnableVisualStyles();
     Application::SetCompatibleTextRenderingDefault(false);
-    Application::Run(gcnew MyForm1());
+
+    Application::Run(gcnew HuffmanUI::MyForm1());
     return 0;
 }
-

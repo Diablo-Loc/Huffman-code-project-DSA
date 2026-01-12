@@ -2,6 +2,7 @@
 #ifndef __INTELLISENSE__
 #include "HuffmanWrapper.h"
 #include "Node.h"
+#include "Visualize.h"
 #include "Metrics.h"
 #include <msclr/marshal_cppstd.h>
 
@@ -25,6 +26,15 @@ namespace HuffmanUI {
 		{
 			InitializeComponent();
 			InitMetrics();
+			// Khởi tạo visualizer
+			visualizer = gcnew HuffmanUI::Visualize();
+			visualizer->TopLevel = false;
+			visualizer->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
+			visualizer->Dock = DockStyle::Fill;
+
+			// Thêm vào pnlGraphic
+			this->pnlGraphic->Controls->Add(visualizer);
+			visualizer->Show();
 			//
 			//TODO: Add the constructor code here
 			//
@@ -161,7 +171,12 @@ namespace HuffmanUI {
 				flags
 			);
 		}
-
+		void DeleteTree(Node* node) {
+			if (!node) return;
+			DeleteTree(node->left);
+			DeleteTree(node->right);
+			delete node; // Giải phóng vùng nhớ của Node
+		}
 
 	private: System::Windows::Forms::Label^ label1;
 	private: System::Windows::Forms::Label^ lblFileManagement;
@@ -209,6 +224,8 @@ namespace HuffmanUI {
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
+		/// 
+		HuffmanUI::Visualize^ visualizer;	
 		System::ComponentModel::Container^ components;
 		Node* huffmanRoot = nullptr;
 
@@ -328,6 +345,7 @@ namespace HuffmanUI {
 			this->btnDecompress->TabIndex = 7;
 			this->btnDecompress->Text = L"Decompress File";
 			this->btnDecompress->UseVisualStyleBackColor = true;
+			this->btnDecompress->Click += gcnew System::EventHandler(this, &MyForm1::btnDecompress_Click);
 			// 
 			// groupboxFileOperations
 			// 
@@ -571,63 +589,84 @@ namespace HuffmanUI {
 			txtDest->Text = fbd->SelectedPath;
 		}
 	}
-	private: System::Void btnCompress_Click(
-		System::Object^ sender,
-		System::EventArgs^ e)
+	private: System::Void btnCompress_Click(System::Object^ sender, System::EventArgs^ e)
 	{
-		// 1. Lấy path từ UI
+		// 1. Lấy đường dẫn từ UI
 		String^ inputManaged = txtSource->Text;
 		String^ outputFolder = txtDest->Text;
 
-		if (String::IsNullOrEmpty(inputManaged) ||
-			String::IsNullOrEmpty(outputFolder))
-		{
-			MessageBox::Show("Chưa chọn file hoặc thư mục đích");
+		if (String::IsNullOrEmpty(inputManaged) || String::IsNullOrEmpty(outputFolder)) {
+			MessageBox::Show("Vui lòng chọn file nguồn và thư mục đích!");
 			return;
 		}
 
-		// 2. Tạo path output .huf
-		String^ outputManaged =
-			System::IO::Path::Combine(
-				outputFolder,
-				System::IO::Path::GetFileName(inputManaged) + ".huf"
-			);
+		// 2. Tạo đường dẫn file nén .huf
+		String^ fileName = System::IO::Path::GetFileName(inputManaged);
+		String^ outputManaged = System::IO::Path::Combine(outputFolder, fileName + ".huf");
 
-		// 3. Chuyển String^ → std::string
-		std::string input =
-			marshal_as<std::string>(inputManaged);
-		std::string output =
-			marshal_as<std::string>(outputManaged);
+		// 3. Chuyển String^ (Managed) sang std::string (Native)
+		std::string input = marshal_as<std::string>(inputManaged);
+		std::string output = marshal_as<std::string>(outputManaged);
 
-		// 4. Gọi core Huffman
+		// 4. Thực hiện nén
 		CompressionMetrics metrics;
-		bool ok =
-			HuffmanWrapper::compressFile(input, output, metrics);
+		bool ok = HuffmanWrapper::compressFile(input, output, metrics);
 
-		if (!ok)
-		{
-			MessageBox::Show("Compress failed");
+		if (ok) {
+			// CẬP NHẬT CÂY LÊN GIAO DIỆN
+			if (metrics.root != nullptr && visualizer != nullptr) {
+				visualizer->SetTreeAndDraw(metrics.root);
+			}
+
+			// Cập nhật các thông số vào ListView
+			UpdateMetric("Space Saving", metrics.spaceSaving.ToString("F1") + "%");
+			UpdateMetric("Entropy", metrics.entropy.ToString("F2"));
+			UpdateMetric("Max Tree Depth", metrics.maxTreeDepth.ToString());
+			UpdateMetric("Processing Speed", metrics.processingTimeMs.ToString("F2") + " ms");
+
+			MessageBox::Show("Nén file thành công!", "Thông báo", MessageBoxButtons::OK, MessageBoxIcon::Information);
+		}
+		else {
+			MessageBox::Show("Nén file thất bại!", "Lỗi", MessageBoxButtons::OK, MessageBoxIcon::Error);
+		}
+	}
+	private: System::Void btnDecompress_Click(System::Object^ sender, System::EventArgs^ e) {
+		String^ inputManaged = txtSource->Text;
+		String^ outputFolder = txtDest->Text;
+
+		if (String::IsNullOrEmpty(inputManaged) || String::IsNullOrEmpty(outputFolder)) {
+			MessageBox::Show("Vui lòng chọn file nén (.huf) và thư mục lưu!");
 			return;
 		}
-		huffmanRoot = metrics.root;
-		pnlGraphic->Invalidate(); // vẽ lại panel
 
-		// 5. Update Performance Metrics
-		UpdateMetric("Space Saving",
-			metrics.spaceSaving.ToString("F1") + "%");
+		// Tạo đường dẫn file đầu ra (bỏ đuôi .huf hoặc thêm đuôi .dec)
+		String^ fileName = System::IO::Path::GetFileNameWithoutExtension(inputManaged);
+		String^ outputManaged = System::IO::Path::Combine(outputFolder, fileName + "_extracted.txt");
 
-		UpdateMetric("Entropy",
-			metrics.entropy.ToString("F2"));
+		std::string input = marshal_as<std::string>(inputManaged);
+		std::string output = marshal_as<std::string>(outputManaged);
 
-		UpdateMetric("Max Tree Depth",
-			metrics.maxTreeDepth.ToString());
+		CompressionMetrics metrics;
+		bool ok = HuffmanWrapper::decompressFile(input, output, metrics);
 
-		UpdateMetric("Processing Speed",
-			metrics.processingTimeMs.ToString("F2"));
+		if (ok) {
+			// HIỂN THỊ CÂY LÊN GIAO DIỆN TỪ FILE ĐÃ NÉN
+			if (metrics.root != nullptr && visualizer != nullptr) {
+				visualizer->SetTreeAndDraw(metrics.root);
+			}
 
-		MessageBox::Show("Compress success");
+			// Reset các thông số metrics vì đây là giải nén
+			UpdateMetric("Space Saving", "-");
+			UpdateMetric("Entropy", "-");
+			UpdateMetric("Max Tree Depth", "-");
+			UpdateMetric("Processing Speed", "-");
+
+			MessageBox::Show("Giải nén thành công!\nFile lưu tại: " + outputManaged, "Thông báo");
+		}
+		else {
+			MessageBox::Show("Giải nén thất bại! File có thể bị hỏng hoặc không đúng định dạng.", "Lỗi");
+		}
 	}
-
-	};
+};
 }
 #endif

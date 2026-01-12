@@ -11,7 +11,7 @@ public:
         const std::string& outputPath, CompressionMetrics& metrics);
 
     static bool decompressFile(const std::string& inputPath,
-        const std::string& outputPath);
+        const std::string& outputPath, CompressionMetrics& metrics);
 };
 
 #endif

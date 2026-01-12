@@ -29,9 +29,12 @@ bool HuffmanWrapper::compressFile(
     Encoder enc;
     enc.countFrequency(data);
 
-    HuffmanTree tree;
-    Node* root = tree.buildTree(enc.getFrequency());
-    if (!root) return false;
+    HuffmanTree* tree = new HuffmanTree();
+    Node* root = tree->buildTree(enc.getFrequency());
+    if (!root) {
+        delete tree;
+        return false;
+    }
 
     enc.buildCode(root);
     vector<BYTE> encoded = enc.encodeToBytes(data);
@@ -77,7 +80,8 @@ bool HuffmanWrapper::compressFile(
 //decompress
 bool HuffmanWrapper::decompressFile(
     const string& inputPath,
-    const string& outputPath)
+    const string& outputPath,
+    CompressionMetrics& metrics)
 {
     ifstream in(inputPath, ios::binary);
     if (!in) return false;

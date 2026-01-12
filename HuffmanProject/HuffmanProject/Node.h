@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef NODE_H
 #define NODE_H
 
@@ -19,11 +19,11 @@ struct Node {
     }
     Node* cloneTree(const Node* src)
     {
-        if (!src) return nullptr;
+        if (!src) return nullptr; // Kiểm tra an toàn
 
         Node* n = new Node(src->ch, src->freq);
-        n->left = cloneTree(src->left);
-        n->right = cloneTree(src->right);
+        n->left = cloneTree(src->left);  // Đệ quy bên trái
+        n->right = cloneTree(src->right); // Đệ quy bên phải
         return n;
     }
 
