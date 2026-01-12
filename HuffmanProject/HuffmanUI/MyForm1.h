@@ -227,7 +227,13 @@ namespace HuffmanUI {
 		/// 
 		HuffmanUI::Visualize^ visualizer;	
 		System::ComponentModel::Container^ components;
-		Node* huffmanRoot = nullptr;
+private: System::Windows::Forms::Label^ lblSize;
+
+private: System::Windows::Forms::Label^ lblFormat;
+private: System::Windows::Forms::Label^ lblFileName;
+private: System::Windows::Forms::PictureBox^ picFileIcon;
+
+	   Node* huffmanRoot = nullptr;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -245,6 +251,10 @@ namespace HuffmanUI {
 			this->btnCompress = (gcnew System::Windows::Forms::Button());
 			this->btnDecompress = (gcnew System::Windows::Forms::Button());
 			this->groupboxFileOperations = (gcnew System::Windows::Forms::GroupBox());
+			this->picFileIcon = (gcnew System::Windows::Forms::PictureBox());
+			this->lblSize = (gcnew System::Windows::Forms::Label());
+			this->lblFormat = (gcnew System::Windows::Forms::Label());
+			this->lblFileName = (gcnew System::Windows::Forms::Label());
 			this->btnSelectFolder = (gcnew System::Windows::Forms::Button());
 			this->btnBrowse = (gcnew System::Windows::Forms::Button());
 			this->txtDest = (gcnew System::Windows::Forms::TextBox());
@@ -264,6 +274,7 @@ namespace HuffmanUI {
 			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
 			this->pnlTop->SuspendLayout();
 			this->groupboxFileOperations->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->picFileIcon))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			this->SuspendLayout();
 			// 
@@ -349,6 +360,10 @@ namespace HuffmanUI {
 			// 
 			// groupboxFileOperations
 			// 
+			this->groupboxFileOperations->Controls->Add(this->picFileIcon);
+			this->groupboxFileOperations->Controls->Add(this->lblSize);
+			this->groupboxFileOperations->Controls->Add(this->lblFormat);
+			this->groupboxFileOperations->Controls->Add(this->lblFileName);
 			this->groupboxFileOperations->Controls->Add(this->btnSelectFolder);
 			this->groupboxFileOperations->Controls->Add(this->btnBrowse);
 			this->groupboxFileOperations->Controls->Add(this->txtDest);
@@ -357,14 +372,49 @@ namespace HuffmanUI {
 			this->groupboxFileOperations->Controls->Add(this->lblSourcePath);
 			this->groupboxFileOperations->Location = System::Drawing::Point(13, 136);
 			this->groupboxFileOperations->Name = L"groupboxFileOperations";
-			this->groupboxFileOperations->Size = System::Drawing::Size(262, 240);
+			this->groupboxFileOperations->Size = System::Drawing::Size(262, 308);
 			this->groupboxFileOperations->TabIndex = 8;
 			this->groupboxFileOperations->TabStop = false;
 			this->groupboxFileOperations->Text = L"File Operations";
 			// 
+			// picFileIcon
+			// 
+			this->picFileIcon->Location = System::Drawing::Point(16, 190);
+			this->picFileIcon->Name = L"picFileIcon";
+			this->picFileIcon->Size = System::Drawing::Size(61, 47);
+			this->picFileIcon->TabIndex = 9;
+			this->picFileIcon->TabStop = false;
+			// 
+			// lblSize
+			// 
+			this->lblSize->AutoSize = true;
+			this->lblSize->Location = System::Drawing::Point(13, 171);
+			this->lblSize->Name = L"lblSize";
+			this->lblSize->Size = System::Drawing::Size(36, 16);
+			this->lblSize->TabIndex = 8;
+			this->lblSize->Text = L"Size:";
+			// 
+			// lblFormat
+			// 
+			this->lblFormat->AutoSize = true;
+			this->lblFormat->Location = System::Drawing::Point(13, 145);
+			this->lblFormat->Name = L"lblFormat";
+			this->lblFormat->Size = System::Drawing::Size(52, 16);
+			this->lblFormat->TabIndex = 7;
+			this->lblFormat->Text = L"Format:";
+			// 
+			// lblFileName
+			// 
+			this->lblFileName->AutoSize = true;
+			this->lblFileName->Location = System::Drawing::Point(13, 120);
+			this->lblFileName->Name = L"lblFileName";
+			this->lblFileName->Size = System::Drawing::Size(47, 16);
+			this->lblFileName->TabIndex = 6;
+			this->lblFileName->Text = L"Name:";
+			// 
 			// btnSelectFolder
 			// 
-			this->btnSelectFolder->Location = System::Drawing::Point(29, 186);
+			this->btnSelectFolder->Location = System::Drawing::Point(29, 279);
 			this->btnSelectFolder->Name = L"btnSelectFolder";
 			this->btnSelectFolder->Size = System::Drawing::Size(75, 23);
 			this->btnSelectFolder->TabIndex = 5;
@@ -384,7 +434,7 @@ namespace HuffmanUI {
 			// 
 			// txtDest
 			// 
-			this->txtDest->Location = System::Drawing::Point(138, 141);
+			this->txtDest->Location = System::Drawing::Point(138, 243);
 			this->txtDest->Name = L"txtDest";
 			this->txtDest->ReadOnly = true;
 			this->txtDest->Size = System::Drawing::Size(118, 22);
@@ -401,7 +451,7 @@ namespace HuffmanUI {
 			// lblDestinationFolder
 			// 
 			this->lblDestinationFolder->AutoSize = true;
-			this->lblDestinationFolder->Location = System::Drawing::Point(13, 144);
+			this->lblDestinationFolder->Location = System::Drawing::Point(13, 249);
 			this->lblDestinationFolder->Name = L"lblDestinationFolder";
 			this->lblDestinationFolder->Size = System::Drawing::Size(119, 16);
 			this->lblDestinationFolder->TabIndex = 1;
@@ -539,6 +589,7 @@ namespace HuffmanUI {
 			this->pnlTop->PerformLayout();
 			this->groupboxFileOperations->ResumeLayout(false);
 			this->groupboxFileOperations->PerformLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->picFileIcon))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
@@ -565,22 +616,75 @@ namespace HuffmanUI {
 		ofd->Filter = "All Files (*.*)|*.*|Huffman Archives (*.huf)|*.huf";
 
 		if (ofd->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
-			txtSource->Text = ofd->FileName;
+			String^ filePath = ofd->FileName;
+			txtSource->Text = filePath;
 
-			// Tự động gợi ý thư mục đích là cùng thư mục với file nguồn
-			txtDest->Text = System::IO::Path::GetDirectoryName(ofd->FileName);
+			// 1. Tự động gợi ý thư mục đích (Cùng thư mục với file nguồn)
+			txtDest->Text = System::IO::Path::GetDirectoryName(filePath);
 
-			// Logic thông minh: Kiểm tra đuôi file để đổi chế độ
-			if (ofd->FileName->EndsWith(".huf")) {
+			// 2. Lấy thông tin file và hiển thị lên các Label bạn đã đặt tên
+			System::IO::FileInfo^ fileInfo = gcnew System::IO::FileInfo(filePath);
+
+			lblFileName->Text = "Name: " + fileInfo->Name;
+
+			String^ ext = fileInfo->Extension->ToUpper();
+			lblFormat->Text = "Format: " + ext->Replace(".", "");
+
+			// Tính toán dung lượng (Hiển thị KB nếu file nhỏ, MB nếu file lớn)
+			double sizeInBytes = (double)fileInfo->Length;
+			if (sizeInBytes < 1024 * 1024) {
+				lblSize->Text = "Size: " + (sizeInBytes / 1024).ToString("F2") + " KB";
+			}
+			else {
+				lblSize->Text = "Size: " + (sizeInBytes / (1024 * 1024)).ToString("F2") + " MB";
+			}
+
+			// 3. Hiển thị Icon tương ứng vào picFileIcon
+			// Lưu ý: Bạn cần có file ảnh .png trong thư mục debug/bin của project
+			try {
+				if (ext == ".PDF") {
+					picFileIcon->Image = Image::FromFile("pdf_icon.png");
+				}
+				else if (ext == ".MP3" || ext == ".WAV") {
+					picFileIcon->Image = Image::FromFile("music_icon.png");
+				}
+				else if (ext == ".HUF") {
+					picFileIcon->Image = Image::FromFile("huf_icon.png"); // Icon riêng cho file nén
+				}
+				else {
+					picFileIcon->Image = Image::FromFile("default_icon.png");
+				}
+				picFileIcon->SizeMode = PictureBoxSizeMode::Zoom; // Giúp ảnh không bị vỡ
+			}
+			catch (...) {
+				// Nếu chưa có file ảnh icon thì bỏ qua không báo lỗi
+			}
+
+			// 4. Logic bật/tắt nút bấm (Giữ nguyên logic thông minh của bạn)
+			if (filePath->EndsWith(".huf")) {
 				btnCompress->Enabled = false;
 				btnDecompress->Enabled = true;
-				//lblStatus->Text = "Mode: Decompression Ready";
 			}
 			else {
 				btnCompress->Enabled = true;
 				btnDecompress->Enabled = false;
-				//lblStatus->Text = "Mode: Compression Ready";
 			}
+
+			// 5. Hiển thị mã Hex vào ô RichTextBox (nếu bạn có đặt tên là rtbHexPreview)
+			try {
+				System::IO::FileStream^ fs = gcnew System::IO::FileStream(filePath, System::IO::FileMode::Open, System::IO::FileAccess::Read);
+				array<Byte>^ buffer = gcnew array<Byte>(16);
+				int bytesRead = fs->Read(buffer, 0, 16);
+				fs->Close();
+
+				String^ hexStr = "";
+				for (int i = 0; i < bytesRead; i++) {
+					hexStr += buffer[i].ToString("X2") + " ";
+				}
+				// Thay 'rtbHexPreview' bằng tên chuẩn của ô RichTextBox của bạn
+				// rtbHexPreview->Text = hexStr + "..."; 
+			}
+			catch (...) {}
 		}
 	}
 	private: System::Void btnSelectFolder_Click(System::Object^ sender, System::EventArgs^ e) {
