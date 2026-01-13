@@ -384,11 +384,11 @@ namespace HuffmanUI {
 			   // label1
 			   // 
 			   this->label1->AutoSize = true;
-			   this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 13.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			   this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 19.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				   static_cast<System::Byte>(0)));
-			   this->label1->Location = System::Drawing::Point(375, 21);
+			   this->label1->Location = System::Drawing::Point(370, 28);
 			   this->label1->Name = L"label1";
-			   this->label1->Size = System::Drawing::Size(203, 29);
+			   this->label1->Size = System::Drawing::Size(286, 39);
 			   this->label1->TabIndex = 0;
 			   this->label1->Text = L"HUFFMAN TOOL";
 			   // 
@@ -422,7 +422,7 @@ namespace HuffmanUI {
 			   this->lblPerformanceMetrics->AutoSize = true;
 			   this->lblPerformanceMetrics->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 13.8F, System::Drawing::FontStyle::Regular,
 				   System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			   this->lblPerformanceMetrics->Location = System::Drawing::Point(805, 101);
+			   this->lblPerformanceMetrics->Location = System::Drawing::Point(870, 101);
 			   this->lblPerformanceMetrics->Name = L"lblPerformanceMetrics";
 			   this->lblPerformanceMetrics->Size = System::Drawing::Size(235, 29);
 			   this->lblPerformanceMetrics->TabIndex = 3;
@@ -434,7 +434,7 @@ namespace HuffmanUI {
 			   this->pnlTop->Dock = System::Windows::Forms::DockStyle::Top;
 			   this->pnlTop->Location = System::Drawing::Point(0, 0);
 			   this->pnlTop->Name = L"pnlTop";
-			   this->pnlTop->Size = System::Drawing::Size(1132, 78);
+			   this->pnlTop->Size = System::Drawing::Size(1199, 78);
 			   this->pnlTop->TabIndex = 4;
 			   // 
 			   // pnlGraphic
@@ -444,7 +444,7 @@ namespace HuffmanUI {
 				   | System::Windows::Forms::AnchorStyles::Right));
 			   this->pnlGraphic->Location = System::Drawing::Point(291, 136);
 			   this->pnlGraphic->Name = L"pnlGraphic";
-			   this->pnlGraphic->Size = System::Drawing::Size(494, 420);
+			   this->pnlGraphic->Size = System::Drawing::Size(564, 420);
 			   this->pnlGraphic->TabIndex = 5;
 			   // 
 			   // btnCompress
@@ -461,7 +461,7 @@ namespace HuffmanUI {
 			   // btnDecompress
 			   // 
 			   this->btnDecompress->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
-			   this->btnDecompress->Location = System::Drawing::Point(586, 627);
+			   this->btnDecompress->Location = System::Drawing::Point(653, 627);
 			   this->btnDecompress->Name = L"btnDecompress";
 			   this->btnDecompress->Size = System::Drawing::Size(154, 42);
 			   this->btnDecompress->TabIndex = 7;
@@ -591,9 +591,9 @@ namespace HuffmanUI {
 			   this->lvMetrics->FullRowSelect = true;
 			   this->lvMetrics->HeaderStyle = System::Windows::Forms::ColumnHeaderStyle::Nonclickable;
 			   this->lvMetrics->HideSelection = false;
-			   this->lvMetrics->Location = System::Drawing::Point(809, 136);
+			   this->lvMetrics->Location = System::Drawing::Point(875, 136);
 			   this->lvMetrics->Name = L"lvMetrics";
-			   this->lvMetrics->Size = System::Drawing::Size(297, 286);
+			   this->lvMetrics->Size = System::Drawing::Size(312, 286);
 			   this->lvMetrics->TabIndex = 12;
 			   this->lvMetrics->UseCompatibleStateImageBehavior = false;
 			   this->lvMetrics->View = System::Windows::Forms::View::Details;
@@ -616,7 +616,7 @@ namespace HuffmanUI {
 			   this->lblProFeatures->AutoSize = true;
 			   this->lblProFeatures->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 13.8F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				   static_cast<System::Byte>(0)));
-			   this->lblProFeatures->Location = System::Drawing::Point(804, 444);
+			   this->lblProFeatures->Location = System::Drawing::Point(870, 445);
 			   this->lblProFeatures->Name = L"lblProFeatures";
 			   this->lblProFeatures->Size = System::Drawing::Size(152, 29);
 			   this->lblProFeatures->TabIndex = 13;
@@ -626,7 +626,7 @@ namespace HuffmanUI {
 			   // 
 			   this->lblLabelmultiline->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
 			   this->lblLabelmultiline->AutoSize = true;
-			   this->lblLabelmultiline->Location = System::Drawing::Point(812, 486);
+			   this->lblLabelmultiline->Location = System::Drawing::Point(878, 487);
 			   this->lblLabelmultiline->Name = L"lblLabelmultiline";
 			   this->lblLabelmultiline->Size = System::Drawing::Size(205, 16);
 			   this->lblLabelmultiline->TabIndex = 14;
@@ -636,7 +636,7 @@ namespace HuffmanUI {
 			   // 
 			   this->lblMemoryclean->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
 			   this->lblMemoryclean->AutoSize = true;
-			   this->lblMemoryclean->Location = System::Drawing::Point(845, 517);
+			   this->lblMemoryclean->Location = System::Drawing::Point(911, 518);
 			   this->lblMemoryclean->Name = L"lblMemoryclean";
 			   this->lblMemoryclean->Size = System::Drawing::Size(94, 16);
 			   this->lblMemoryclean->TabIndex = 15;
@@ -646,7 +646,7 @@ namespace HuffmanUI {
 			   // 
 			   this->pictureBox1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
 			   this->pictureBox1->BackColor = System::Drawing::Color::LimeGreen;
-			   this->pictureBox1->Location = System::Drawing::Point(815, 513);
+			   this->pictureBox1->Location = System::Drawing::Point(881, 514);
 			   this->pictureBox1->Name = L"pictureBox1";
 			   this->pictureBox1->Size = System::Drawing::Size(20, 20);
 			   this->pictureBox1->TabIndex = 16;
@@ -658,14 +658,14 @@ namespace HuffmanUI {
 				   | System::Windows::Forms::AnchorStyles::Right));
 			   this->pnlLogContainer->Location = System::Drawing::Point(322, 562);
 			   this->pnlLogContainer->Name = L"pnlLogContainer";
-			   this->pnlLogContainer->Size = System::Drawing::Size(434, 50);
+			   this->pnlLogContainer->Size = System::Drawing::Size(501, 50);
 			   this->pnlLogContainer->TabIndex = 17;
 			   // 
 			   // MyForm1
 			   // 
 			   this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			   this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			   this->ClientSize = System::Drawing::Size(1132, 722);
+			   this->ClientSize = System::Drawing::Size(1199, 722);
 			   this->Controls->Add(this->pnlLogContainer);
 			   this->Controls->Add(this->pictureBox1);
 			   this->Controls->Add(this->lblMemoryclean);
@@ -684,7 +684,6 @@ namespace HuffmanUI {
 			   this->Name = L"MyForm1";
 			   this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			   this->Text = L"MyForm1";
-			   this->WindowState = System::Windows::Forms::FormWindowState::Maximized;
 			   this->pnlTop->ResumeLayout(false);
 			   this->pnlTop->PerformLayout();
 			   this->groupboxFileOperations->ResumeLayout(false);
