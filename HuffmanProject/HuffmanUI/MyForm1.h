@@ -805,13 +805,36 @@ namespace HuffmanUI {
 		}
 	}
 	private: System::Void btnCompress_Click(System::Object^ sender, System::EventArgs^ e) {
-		if (String::IsNullOrEmpty(txtSource->Text)) return;
-		// Chạy trên luồng riêng để UpdateStep và Sleep không làm đơ giao diện
+		// Điều kiện 1: Kiểm tra file nguồn
+		if (String::IsNullOrWhiteSpace(txtSource->Text)) {
+			MessageBox::Show("Vui lòng chọn file cần nén!", "Thông báo", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+			return;
+		}
+
+		// Điều kiện 2: Kiểm tra thư mục đích
+		if (String::IsNullOrWhiteSpace(txtDest->Text)) {
+			MessageBox::Show("Vui lòng chọn thư mục lưu file nén!", "Thông báo", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+			return;
+		}
+
+		// Nếu mọi thứ ổn, chạy tiến trình nén
 		System::Threading::Tasks::Task::Run(gcnew Action(this, &MyForm1::PerformCompression));
 	}
 
 	private: System::Void btnDecompress_Click(System::Object^ sender, System::EventArgs^ e) {
-		if (String::IsNullOrEmpty(txtSource->Text)) return;
+		// Điều kiện 1: Kiểm tra file nguồn (.huf)
+		if (String::IsNullOrWhiteSpace(txtSource->Text)) {
+			MessageBox::Show("Vui lòng chọn file (.huf) cần giải nén!", "Thông báo", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+			return;
+		}
+
+		// Điều kiện 2: Kiểm tra thư mục đích
+		if (String::IsNullOrWhiteSpace(txtDest->Text)) {
+			MessageBox::Show("Vui lòng chọn thư mục để xuất file giải nén!", "Thông báo", MessageBoxButtons::OK, MessageBoxIcon::Warning);
+			return;
+		}
+
+		// Nếu mọi thứ ổn, chạy tiến trình giải nén
 		System::Threading::Tasks::Task::Run(gcnew Action(this, &MyForm1::PerformDecompression));
 	}
 
