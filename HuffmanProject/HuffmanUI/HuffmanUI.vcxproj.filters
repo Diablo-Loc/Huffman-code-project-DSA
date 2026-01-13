@@ -21,6 +21,9 @@
     <ClInclude Include="Visualize.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ActivityLogForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyForm1.cpp">

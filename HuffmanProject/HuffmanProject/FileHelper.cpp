@@ -1,17 +1,28 @@
-#include "FileHelper.h"
+﻿#include "FileHelper.h"
 #include <fstream>
 
 std::vector<BYTE> FileHelper::readBinary(const std::string& path) {
-    std::ifstream file(path, std::ios::binary);
-    std::vector<BYTE> data;
+    // 1. Mở file và di chuyển con trỏ xuống cuối file ngay lập tức
+    std::ifstream file(path, std::ios::binary | std::ios::ate);
 
-    if (!file) return data;
+    if (!file) return std::vector<BYTE>();
 
-    BYTE b;
-    while (file.read((char*)&b, 1))
-        data.push_back(b);
+    // 2. Lấy kích thước file (vị trí hiện tại của con trỏ)
+    std::streamsize size = file.tellg();
+    if (size <= 0) return std::vector<BYTE>();
 
-    return data;
+    // 3. Quay lại đầu file
+    file.seekg(0, std::ios::beg);
+
+    // 4. Cấp phát bộ nhớ 1 lần duy nhất cho toàn bộ dữ liệu
+    std::vector<BYTE> data(size);
+
+    // 5. Đọc toàn bộ khối dữ liệu vào vector
+    if (file.read((char*)data.data(), size)) {
+        return data;
+    }
+
+    return std::vector<BYTE>();
 }
 
 void FileHelper::writeBinary(const std::string& path,

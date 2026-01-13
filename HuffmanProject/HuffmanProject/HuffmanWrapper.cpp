@@ -83,32 +83,53 @@ bool HuffmanWrapper::decompressFile(
     const string& outputPath,
     CompressionMetrics& metrics)
 {
+    auto start = chrono::high_resolution_clock::now();
     ifstream in(inputPath, ios::binary);
     if (!in) return false;
 
+    // 1. Kiểm tra Magic Number
     char magic[4];
     in.read(magic, 4);
     if (memcmp(magic, MAGIC, 4) != 0) return false;
 
+    // 2. Đọc kích thước gốc
     int originalSize;
     in.read((char*)&originalSize, sizeof(int));
 
+    // 3. Đọc bảng tần số
     int freq[256];
     in.read((char*)freq, 256 * sizeof(int));
 
-    HuffmanTree tree;
-    Node* root = tree.buildTree(freq);
+    // 4. Tái tạo cây Huffman
+    HuffmanTree* tree = new HuffmanTree();
+    Node* root = tree->buildTree(freq);
     if (!root) return false;
 
-    vector<BYTE> encoded;
-    BYTE b;
-    while (in.read((char*)&b, 1))
-        encoded.push_back(b);
+    // 5. Đọc toàn bộ dữ liệu mã hóa còn lại
+    in.seekg(0, ios::end);
+    long long fileSize = in.tellg();
+    long long currentPos = 4 + sizeof(int) + (256 * sizeof(int));
+    long long dataSize = fileSize - currentPos;
+    in.seekg(currentPos, ios::beg);
 
+    vector<BYTE> encoded(dataSize);
+    in.read((char*)encoded.data(), dataSize);
+    in.close();
+
+    // 6. Giải mã
     Decoder dec;
-    vector<BYTE> decoded =
-        dec.decodeFromBytes(encoded, root, originalSize);
+    vector<BYTE> decoded = dec.decodeFromBytes(encoded, root, originalSize);
 
+    // 7. Ghi file kết quả
     FileHelper::writeBinary(outputPath, decoded);
+
+    // 8. Trả root về cho UI
+    metrics.root = root;
+    auto end = chrono::high_resolution_clock::now();
+
+    // ĐIỀN THÔNG TIN VÀO METRICS ĐỂ UI HIỂN THỊ
+    metrics.root = root;
+    metrics.maxTreeDepth = MetricsCalculator::calculateTreeDepth(root);
+    metrics.processingTimeMs = chrono::duration<double, std::milli>(end - start).count();
     return true;
 }

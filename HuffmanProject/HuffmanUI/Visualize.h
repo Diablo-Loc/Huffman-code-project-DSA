@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include "HuffmanWrapper.h"
 #include "Node.h"
-#include "MyForm1.h"
 #include <string>
-#include <msclr/marshal_cppstd.h> // Thư viện để chuyển đổi string
+#include <msclr/marshal_cppstd.h>
+#include <algorithm>
 
 namespace HuffmanUI {
 
@@ -12,6 +12,7 @@ namespace HuffmanUI {
     using namespace System::Collections;
     using namespace System::Windows::Forms;
     using namespace System::Drawing;
+    using namespace System::Drawing::Drawing2D;
 
     public ref class Visualize : public System::Windows::Forms::Form
     {
@@ -20,168 +21,180 @@ namespace HuffmanUI {
         {
             InitializeComponent();
             huffmanRoot = nullptr;
+            this->DoubleBuffered = true;
+
+            this->pnlCanvas->MouseDown += gcnew MouseEventHandler(this, &Visualize::OnMouseDown);
+            this->pnlCanvas->MouseMove += gcnew MouseEventHandler(this, &Visualize::OnMouseMove);
+            this->pnlCanvas->MouseUp += gcnew MouseEventHandler(this, &Visualize::OnMouseUp);
+            this->pnlCanvas->MouseWheel += gcnew MouseEventHandler(this, &Visualize::OnMouseWheel);
         }
+
+        void ApplyZoom(float scale) {
+            this->currentScale = scale;
+            this->pnlCanvas->Invalidate();
+        }
+
         void SetTreeAndDraw(Node* root) {
-            if (this->huffmanRoot) {
-                DeleteTree(this->huffmanRoot);
-            }
+            if (this->huffmanRoot) DeleteTree(this->huffmanRoot);
             if (root) {
-                // Clone để an toàn bộ nhớ
                 this->huffmanRoot = root->cloneTree(root);
+                offsetX = 0;
+                offsetY = 0;
+                currentScale = 0.6f; // Thu nhỏ hơn một chút để thấy toàn cảnh
             }
-            this->pnlCanvas->Invalidate(); // Yêu cầu vẽ lại
+            this->pnlCanvas->Invalidate();
         }
+
     protected:
-        ~Visualize()
-        {
-            if (components) delete components;
-            // Lưu ý: Việc giải phóng huffmanRoot nên để HuffmanTree đảm nhận
+        ~Visualize() {
+            if (_components) delete _components;
+            if (huffmanRoot) DeleteTree(huffmanRoot);
         }
 
     private:
         Node* huffmanRoot;
-        int nodeRadius = 25;      // Tăng kích thước để dễ nhìn text
-        int levelSpacing = 70;    // Khoảng cách giữa các tầng
+        float currentScale = 1.0f;
+        float offsetX = 0.0f;
+        float offsetY = 0.0f;
+        bool isDragging = false;
+        Drawing::Point lastMousePos;
+        int levelSpacing = 100; // Khoảng cách tầng rộng rãi
+
         void DeleteTree(Node* node) {
             if (!node) return;
             DeleteTree(node->left);
             DeleteTree(node->right);
             delete node;
         }
-        // Hàm vẽ Node đệ quy
-        void DrawHuffmanNode(Graphics^ g, Node* node, int x, int y, int xOffset) {
+
+        // --- THUẬT TOÁN QUAN TRỌNG: ĐẾM LÁ ---
+        int GetLeafCount(Node* node) {
+            if (!node) return 0;
+            if (node->isLeaf()) return 1;
+            return GetLeafCount(node->left) + GetLeafCount(node->right);
+        }
+
+        int GetTreeHeight(Node* node) {
+            if (!node) return 0;
+            return 1 + System::Math::Max(GetTreeHeight(node->left), GetTreeHeight(node->right));
+        }
+
+        void DrawHuffmanNode(Graphics^ g, Node* node, int x, int y, float availableWidth, StringFormat^ sf, int r) {
             if (!node) return;
 
-            Pen^ linePen = gcnew Pen(Color::DeepSkyBlue, 2);
-            if (node->left) {
-                g->DrawLine(linePen, x, y, x - xOffset, y + levelSpacing);
-                DrawHuffmanNode(g, node->left, x - xOffset, y + levelSpacing, xOffset / 1.8);
-            }
-            if (node->right) {
-                g->DrawLine(linePen, x, y, x + xOffset, y + levelSpacing);
-                DrawHuffmanNode(g, node->right, x + xOffset, y + levelSpacing, xOffset / 1.8);
+            if (node->left || node->right) {
+                int leftLeaves = GetLeafCount(node->left);
+                int rightLeaves = GetLeafCount(node->right);
+                int totalLeaves = leftLeaves + rightLeaves;
+
+                // Tính toán tọa độ X dựa trên tỉ lệ số lá của từng nhánh
+                float leftAreaWidth = (availableWidth * leftLeaves) / totalLeaves;
+                float rightAreaWidth = (availableWidth * rightLeaves) / totalLeaves;
+
+                // Tọa độ X của các con là trung tâm của vùng diện tích được cấp
+                int leftX = x - (availableWidth / 2) + (leftAreaWidth / 2);
+                int rightX = x + (availableWidth / 2) - (rightAreaWidth / 2);
+
+                Pen^ edgePen = gcnew Pen(Color::FromArgb(180, 0, 191, 255), 1.5f);
+
+                // Vẽ đường nối (Bezier mượt mà)
+                if (node->left) {
+                    GraphicsPath^ p = gcnew GraphicsPath();
+                    p->AddBezier(x, y, x, y + levelSpacing / 2, leftX, y + levelSpacing / 2, leftX, y + levelSpacing);
+                    g->DrawPath(edgePen, p);
+                    DrawHuffmanNode(g, node->left, leftX, y + levelSpacing, leftAreaWidth, sf, r);
+                }
+                if (node->right) {
+                    GraphicsPath^ p = gcnew GraphicsPath();
+                    p->AddBezier(x, y, x, y + levelSpacing / 2, rightX, y + levelSpacing / 2, rightX, y + levelSpacing);
+                    g->DrawPath(edgePen, p);
+                    DrawHuffmanNode(g, node->right, rightX, y + levelSpacing, rightAreaWidth, sf, r);
+                }
             }
 
-            Drawing::Rectangle rect(x - nodeRadius, y - nodeRadius, nodeRadius * 2, nodeRadius * 2);
-            Drawing::Font^ font = gcnew Drawing::Font("Arial", 8, FontStyle::Bold);
-
+            // Vẽ Node (Hình khối và Chữ)
+            System::Drawing::Rectangle rect(x - r, y - r, r * 2, r * 2);
             if (node->isLeaf()) {
-                g->FillEllipse(Brushes::Black, rect);
-                g->DrawEllipse(gcnew Pen(Color::Cyan, 2), rect);
+                LinearGradientBrush^ br = gcnew LinearGradientBrush(rect, Color::MediumSpringGreen, Color::Teal, 45.0f);
+                g->FillEllipse(br, rect);
+                g->DrawEllipse(gcnew Pen(Color::White, 1.2f), rect);
 
-                // --- ĐÃ SỬA LỖI Ở ĐÂY ---
-                String^ charStr;
-                if (node->ch == '\n') charStr = "\\n";
-                else if (node->ch == ' ') charStr = "Space";
-                else charStr = gcnew String((char)node->ch, 1);
-
-                String^ info = "'" + charStr + "'\nf:" + node->freq;
-                g->DrawString(info, font, Brushes::White, x - 18, y - 10);
+                String^ ch = (node->ch == '\n') ? "\\n" : (node->ch == ' ') ? "SP" : gcnew String((wchar_t)node->ch, 1);
+                Drawing::Font^ f = gcnew Drawing::Font("Segoe UI", (float)r / 2.2f, FontStyle::Bold);
+                g->DrawString(ch + "\n" + node->freq, f, Brushes::White, rect, sf);
             }
             else {
-                g->FillRectangle(Brushes::Black, rect);
-                g->DrawRectangle(gcnew Pen(Color::DeepSkyBlue, 2), rect);
-                g->DrawString(node->freq.ToString(), font, Brushes::Aqua, x - 10, y - 7);
+                LinearGradientBrush^ br = gcnew LinearGradientBrush(rect, Color::DeepSkyBlue, Color::MidnightBlue, 45.0f);
+                g->FillRectangle(br, rect);
+                g->DrawRectangle(gcnew Pen(Color::Cyan, 1.0f), rect);
+
+                Drawing::Font^ f = gcnew Drawing::Font("Segoe UI", (float)r / 2.8f, FontStyle::Regular);
+                g->DrawString(node->freq.ToString(), f, Brushes::White, rect, sf);
             }
         }
 
     private: System::Void pnlCanvas_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) {
-        if (this->huffmanRoot != nullptr) {
-            e->Graphics->SmoothingMode = Drawing2D::SmoothingMode::AntiAlias;
-            e->Graphics->Clear(Color::Black); // Xóa nền cũ
-            // Vẽ từ giữa Panel, tầng 1 cách đỉnh 40px
-            DrawHuffmanNode(e->Graphics, huffmanRoot, pnlCanvas->Width / 2, 40, pnlCanvas->Width / 4);
-        }
+        if (this->huffmanRoot == nullptr) return;
+        Graphics^ g = e->Graphics;
+        g->SmoothingMode = SmoothingMode::HighQuality;
+        g->TextRenderingHint = Drawing::Text::TextRenderingHint::ClearTypeGridFit;
+
+        // Vẽ nền Gradient tối
+        System::Drawing::Rectangle fullRect(0, 0, pnlCanvas->Width, pnlCanvas->Height);
+        LinearGradientBrush^ bgBr = gcnew LinearGradientBrush(fullRect, Color::FromArgb(15, 15, 25), Color::Black, 90.0f);
+        g->FillRectangle(bgBr, fullRect);
+
+        g->TranslateTransform(offsetX + (float)pnlCanvas->Width / 2.0f, 60.0f + offsetY);
+        g->ScaleTransform(currentScale, currentScale);
+
+        int height = GetTreeHeight(huffmanRoot);
+        int nodeR = (height > 10) ? 18 : 25;
+
+        // Chiều rộng tổng thể ban đầu (Tự động scale theo số lượng nút lá)
+        float totalTreeWidth = GetLeafCount(huffmanRoot) * (nodeR * 3.5f);
+
+        StringFormat^ sf = gcnew StringFormat();
+        sf->Alignment = StringAlignment::Center;
+        sf->LineAlignment = StringAlignment::Center;
+
+        DrawHuffmanNode(g, huffmanRoot, 0, 0, totalTreeWidth, sf, nodeR);
     }
-  
-    /*private: System::Void btnBuild_Click(System::Object^ sender, System::EventArgs^ e) {
-        // TEST NHANH: Tạo cây giả lập thay vì gọi wrapper.compressFile
-        // Node gốc (freq: 22)
-        this->huffmanRoot = new Node(0, 44);
 
-        // Nhánh trái (Node lá 'c', freq: 12)
-        this->huffmanRoot->left = new Node('c', 12);
+           // --- Mouse Events (Pan & Zoom) ---
+           void OnMouseWheel(Object^ sender, MouseEventArgs^ e) {
+               if (e->Delta > 0) currentScale *= 1.1f;
+               else if (currentScale > 0.05f) currentScale /= 1.1f;
+               pnlCanvas->Invalidate();
+           }
+           void OnMouseDown(Object^ sender, MouseEventArgs^ e) {
+               if (e->Button == System::Windows::Forms::MouseButtons::Left) { isDragging = true; lastMousePos = e->Location; }
+           }
+           void OnMouseMove(Object^ sender, MouseEventArgs^ e) {
+               if (isDragging) {
+                   offsetX += (e->X - lastMousePos.X);
+                   offsetY += (e->Y - lastMousePos.Y);
+                   lastMousePos = e->Location;
+                   pnlCanvas->Invalidate();
+               }
+           }
+           void OnMouseUp(Object^ sender, MouseEventArgs^ e) { isDragging = false; }
 
-        // Nhánh phải (Node trung gian, freq: 10)
-        this->huffmanRoot->right = new Node(0, 10);
-        this->huffmanRoot->right->left = new Node('s', 5);
-        this->huffmanRoot->right->right = new Node('a', 5);
-
-        // Yêu cầu vẽ lại
-        this->pnlCanvas->Invalidate();
-    }*/
-    private: System::Void btnBuild_Click(System::Object^ sender, System::EventArgs^ e) {
-        OpenFileDialog^ ofd = gcnew OpenFileDialog();
-        ofd->Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-
-        if (ofd->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
-            std::string inputPath = msclr::interop::marshal_as<std::string>(ofd->FileName);
-            std::string outputPath = inputPath + ".huf";
-
-            HuffmanWrapper wrapper;
-            CompressionMetrics metrics;
-            metrics.root = nullptr; // Khởi tạo an toàn
-
-            if (wrapper.compressFile(inputPath, outputPath, metrics)) {
-                // 1. Dọn dẹp cây hiện tại trên giao diện nếu có
-                if (this->huffmanRoot != nullptr) {
-                    DeleteTree(this->huffmanRoot);
-                    this->huffmanRoot = nullptr;
-                }
-
-                // 2. Clone cây từ metrics sang UI (Lúc này metrics.root chắc chắn còn sống)
-                if (metrics.root != nullptr) {
-                    this->huffmanRoot = metrics.root->cloneTree(metrics.root);
-                }
-
-                // 3. Yêu cầu vẽ lại
-                this->pnlCanvas->Invalidate();
-                MessageBox::Show("Build thành công!");
-            }
-        }
-    }
     private:
         System::Windows::Forms::Panel^ pnlCanvas;
-        System::Windows::Forms::Button^ btnBuild;
-        System::ComponentModel::Container^ components;
+        System::ComponentModel::Container^ _components;
 
-        void InitializeComponent(void)
-        {
+        void InitializeComponent(void) {
             this->pnlCanvas = (gcnew System::Windows::Forms::Panel());
-            this->btnBuild = (gcnew System::Windows::Forms::Button());
-            this->pnlCanvas->SuspendLayout();
             this->SuspendLayout();
-            // 
-            // pnlCanvas
-            // 
-            this->pnlCanvas->BackColor = System::Drawing::Color::Black;
-            this->pnlCanvas->Controls->Add(this->btnBuild);
             this->pnlCanvas->Dock = System::Windows::Forms::DockStyle::Fill;
-            this->pnlCanvas->Location = System::Drawing::Point(0, 0);
+            this->pnlCanvas->BackColor = Color::Black;
             this->pnlCanvas->Name = L"pnlCanvas";
-            this->pnlCanvas->Size = System::Drawing::Size(825, 627);
-            this->pnlCanvas->TabIndex = 1;
             this->pnlCanvas->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &Visualize::pnlCanvas_Paint);
-            // 
-            // btnBuild
-            // 
-            this->btnBuild->Location = System::Drawing::Point(0, 3);
-            this->btnBuild->Name = L"btnBuild";
-            this->btnBuild->Size = System::Drawing::Size(120, 30);
-            this->btnBuild->TabIndex = 0;
-            this->btnBuild->Text = L"Build Huffman Tree";
-            this->btnBuild->Visible = false;
-            this->btnBuild->Click += gcnew System::EventHandler(this, &Visualize::btnBuild_Click);
-            // 
-            // Visualize
-            // 
-            this->ClientSize = System::Drawing::Size(825, 627);
+            this->ClientSize = System::Drawing::Size(1000, 700);
             this->Controls->Add(this->pnlCanvas);
             this->Name = L"Visualize";
-            this->Text = L"Huffman Tree Visualizer";
-            this->pnlCanvas->ResumeLayout(false);
+            this->Text = L"Huffman Tree Pro Visualizer";
             this->ResumeLayout(false);
-
         }
     };
 }
